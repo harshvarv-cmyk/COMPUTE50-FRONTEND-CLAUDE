@@ -95,42 +95,44 @@ function Typer({ words }: { words: string[] }) {
   return <span className="typer">{words[i].slice(0, n)}<i /></span>;
 }
 
-function Particles() {
+function FiftyField() {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = ref.current!, x = c.getContext("2d")!;
-    let w = 0, h = 0, raf = 0;
+    type P = { x: number; y: number; hx: number; hy: number; vx: number; vy: number; r: number };
+    let ps: P[] = [], w = 0, h = 0, raf = 0, on = true, fr = 0, k = "#3b82f6";
     const m = { x: -999, y: -999 };
-    const ps = Array.from({ length: 80 }, () => ({ x: Math.random() * 1400, y: Math.random() * 900, vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5 }));
-    const size = () => { const r = c.parentElement!.getBoundingClientRect(), d = devicePixelRatio || 1; w = r.width; h = r.height; c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0); };
+    const build = () => {
+      const r = c.parentElement!.getBoundingClientRect(), d = Math.min(devicePixelRatio || 1, 2);
+      w = r.width; h = r.height; c.width = w * d; c.height = h * d; x.setTransform(d, 0, 0, d, 0, 0);
+      const W = Math.floor(w), H = Math.floor(h), o = document.createElement("canvas"); o.width = W; o.height = H;
+      const g = o.getContext("2d")!, mob = w < 700;
+      g.font = `800 ${Math.min(h * 0.85, w * (mob ? 0.8 : 0.5))}px "Space Grotesk", Inter, sans-serif`;
+      g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("50", mob ? W / 2 : W * 0.72, H * 0.5);
+      const data = g.getImageData(0, 0, W, H).data, step = mob ? 9 : 7;
+      ps = [];
+      for (let yy = 0; yy < H; yy += step) for (let xx = 0; xx < W; xx += step)
+        if (data[(yy * W + xx) * 4 + 3] > 128) ps.push({ x: Math.random() * w, y: Math.random() * h, hx: xx, hy: yy, vx: 0, vy: 0, r: 1 + Math.random() * 1.3 });
+    };
     const move = (e: PointerEvent) => { const r = c.getBoundingClientRect(); m.x = e.clientX - r.left; m.y = e.clientY - r.top; };
-    let on = true;
     const draw = () => {
       if (!on) return;
-      x.clearRect(0, 0, w, h);
-      const k = getComputedStyle(document.documentElement).getPropertyValue("--b2").trim() || "#3b82f6";
-      x.fillStyle = k; x.strokeStyle = k;
-      const n = w < 700 ? 40 : 80;
-      for (let i = 0; i < n; i++) {
-        const p = ps[i];
+      if (fr++ % 30 === 0) k = getComputedStyle(document.documentElement).getPropertyValue("--b2").trim() || k;
+      x.clearRect(0, 0, w, h); x.fillStyle = k; x.globalAlpha = 0.9;
+      for (const p of ps) {
+        const dx = m.x - p.x, dy = m.y - p.y, d2 = dx * dx + dy * dy;
+        if (d2 < 16900) { const d = Math.sqrt(d2) || 1, f = (130 - d) / 130; p.vx -= (dx / d) * f * 2.4; p.vy -= (dy / d) * f * 2.4; }
+        p.vx = (p.vx + (p.hx - p.x) * 0.035) * 0.86; p.vy = (p.vy + (p.hy - p.y) * 0.035) * 0.86;
         p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-        x.globalAlpha = 0.7; x.beginPath(); x.arc(p.x, p.y, 1.8, 0, 6.3); x.fill();
-        for (let j = i + 1; j < n; j++) {
-          const q = ps[j], d = Math.hypot(p.x - q.x, p.y - q.y);
-          if (d < 120) { x.globalAlpha = (1 - d / 120) * 0.35; x.beginPath(); x.moveTo(p.x, p.y); x.lineTo(q.x, q.y); x.stroke(); }
-        }
-        const dm = Math.hypot(p.x - m.x, p.y - m.y);
-        if (dm < 170) { x.globalAlpha = (1 - dm / 170) * 0.8; x.beginPath(); x.moveTo(p.x, p.y); x.lineTo(m.x, m.y); x.stroke(); p.x += (m.x - p.x) * 0.006; p.y += (m.y - p.y) * 0.006; }
+        x.beginPath(); x.arc(p.x, p.y, p.r, 0, 6.3); x.fill();
       }
       raf = requestAnimationFrame(draw);
     };
     const io = new IntersectionObserver(([e]) => { on = e.isIntersecting; if (on) { cancelAnimationFrame(raf); draw(); } });
-    io.observe(c);
-    size(); draw();
-    addEventListener("resize", size); addEventListener("pointermove", move, { passive: true });
-    return () => { io.disconnect(); cancelAnimationFrame(raf); removeEventListener("resize", size); removeEventListener("pointermove", move); };
+    io.observe(c); build(); draw();
+    void document.fonts.ready.then(build);
+    addEventListener("resize", build); addEventListener("pointermove", move, { passive: true });
+    return () => { io.disconnect(); cancelAnimationFrame(raf); removeEventListener("resize", build); removeEventListener("pointermove", move); };
   }, []);
   return <canvas ref={ref} aria-hidden />;
 }
@@ -141,6 +143,18 @@ function useCountdown() {
   const s = Math.max(0, Math.floor((START.getTime() - now) / 1000));
   return { cd: [["Days", Math.floor(s / 86400)], ["Hours", Math.floor(s / 3600) % 24], ["Mins", Math.floor(s / 60) % 60], ["Secs", s % 60]] as [string, number][], clock: new Date(now).toLocaleTimeString("en-GB") };
 }
+
+const SCH = [[["09:00", "Inauguration"], ["10:00", "Hacking begins"], ["13:00", "Lunch and mentor round"], ["22:00", "Mentor check-in"]], [["10:00", "Mid-review"], ["13:00", "Lunch"], ["15:00", "Final submissions"], ["17:00", "Demos and awards"]]];
+function Schedule() {
+  const [d, setD] = useState(0);
+  return (
+    <div>
+      <div className="tabs">{["Day 1", "Day 2"].map((t, i) => <button key={t} className={d === i ? "on" : ""} onClick={() => setD(i)}>{t}</button>)}</div>
+      <ol className="tl2" key={d}>{SCH[d].map(([t, e], i) => <li key={e} style={{ "--i": i } as CSSProperties}><b>{t}</b><span>{e}</span></li>)}</ol>
+    </div>
+  );
+}
+const PS = [["Smart campus assistant for timetables and attendance", "Detect misinformation in student communities"], ["Offline-first learning portal for low bandwidth", "Real-time collaborative code review tool"], ["Detect phishing in campus emails", "Secure authentication for lab systems"], ["Low-cost air-quality monitor with alerts", "Smart energy meter for hostels"], ["Any problem you care about", "Pitch your own idea at registration"]];
 
 function Countdown() {
   const { cd } = useCountdown();
@@ -190,7 +204,7 @@ export default function App() {
   useEffect(() => { const f = () => setRoute(parse()); addEventListener("hashchange", f); return () => removeEventListener("hashchange", f); }, []);
   useEffect(() => { const t = setTimeout(() => { setLoading(false); setModal(true); setTimeout(() => setModalIn(true), 30); }, 2300); return () => clearTimeout(t); }, []);
   useEffect(() => {
-    const sc = () => { const h = document.documentElement; if (pb.current) pb.current.style.transform = `scaleX(${scrollY / Math.max(1, h.scrollHeight - innerHeight)})`; };
+    const sc = () => { const h = document.documentElement; h.style.setProperty("--hp", String(Math.min(1, scrollY / innerHeight))); if (pb.current) pb.current.style.transform = `scaleX(${scrollY / Math.max(1, h.scrollHeight - innerHeight)})`; };
     let tx = -99, ty = -99, cx = -99, cy = -99, ra = 0;
     const loop = () => { cx += (tx - cx) * 0.2; cy += (ty - cy) * 0.2; if (cur.current) cur.current.style.transform = `translate(${cx}px,${cy}px)`; ra = requestAnimationFrame(loop); };
     loop();
@@ -244,7 +258,7 @@ export default function App() {
   return (
     <>
       <div id="mesh"><i /><i /><i /></div><div id="grain" /><div id="pb" ref={pb} />
-      {loading && <div id="ld"><div className="lg">Compute<b> 50</b></div><span /><div className="ldspin" /><div className="ldtip">TIP // Assemble your team early — great ideas need great teammates.</div></div>}
+      {loading && <div id="ld"><div className="lg">Compute<b> 50</b></div><span /><div className="ldspin" /><pre className="ldcode"><span>{"> compute --init"}</span><span>{"> loading 48 hours of ideas..."}</span><span>{"> ready."}</span></pre><div className="ldtip">TIP // Assemble your team early — great ideas need great teammates.</div></div>}
       <div id="cur" ref={cur} />
 
       <button id="mutebtn" className={mute ? "off" : ""} aria-label="Toggle sound" onClick={() => { muted = !muted; setMute(muted); save("c50mute", muted); if (!muted) tone(600, 0.08, 0.045); }} />
@@ -301,6 +315,7 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
   const sp = useRef<HTMLDivElement>(null);
   const [openQ, setOpenQ] = useState<number | null>(null);
   const [tr, setTr] = useState(0);
+  const [trk, setTrk] = useState<number | null>(null);
   const heroMove = (e: MouseEvent<HTMLElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     e.currentTarget.style.setProperty("--px", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
@@ -320,7 +335,7 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
     <>
       <aside className="rail" aria-label="Sections">{ids.map((id) => <button key={id} className={act === id ? "on" : ""} data-l={id} aria-label={id} onClick={() => scrollToEl(id)} />)}</aside>
       <section className="hero" onMouseMove={heroMove} onMouseLeave={() => sp.current && (sp.current.style.opacity = "0")}>
-        <Particles /><div className="sp" ref={sp} />
+        <FiftyField /><div className="sp" ref={sp} />
         {shapes.map(([c, l, t, s, d], i) => <div key={i} className={`pl ${c}`} style={{ left: l, top: t, "--s": s, "--t": d, "--d": 30 + i * 22 } as CSSProperties}><i /></div>)}
         <div className="scr" /><i className="hud tl" /><i className="hud tr" /><i className="hud bl" /><i className="hud br" />
         <div className="hud-top"><span>COMPUTE // 50</span><HudClock /></div>
@@ -341,7 +356,9 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
 
       <section className="stats"><div className="w"><div className="grid">
         {[[48, "", "Hours of building"], [5, "", "Tracks"], [500, "+", "Hackers (target)"], [25, "+", "Mentors"]].map(([n, x, l]) => <div key={l as string} className="rv"><b><CountUp to={n as number} suffix={x as string} /></b><span>{l}</span></div>)}
-      </div></div></section>
+      </div>
+      <div className="rv reg"><div className="regtop"><span><CountUp to={128} /> of 300 teams registered</span><b>43%</b></div><div className="bar"><i /></div></div>
+      </div></section>
 
       <Sec id="powered" eb="Powered by" title="Our Partners" alt>
         <div className="grid"><Card><span className="pill">Title Sponsor</span><h3 style={{ marginTop: 12 }}>Your Brand Here</h3></Card>
@@ -350,13 +367,14 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
 
       <Sec id="prize" eb="Prize Pool" title="Rewards worth">
         <div className="big rv"><CountUp to={500000} prefix="₹ " /></div>
-        <div className="grid" style={{ marginTop: 20 }}>{[["1st", "₹ 2,00,000"], ["2nd", "₹ 1,25,000"], ["3rd", "₹ 75,000"], ["Track winners", "₹ 1,00,000"]].map(([a, b]) => <Card key={a}><p>{a}</p><h3>{b}</h3></Card>)}</div>
+        <div className="podium rv">{[["2nd", "₹ 1,25,000", "2"], ["1st", "₹ 2,00,000", "1"], ["3rd", "₹ 75,000", "3"]].map(([a, b, n]) => <div key={a} className={`pod p${n}`}><b>{b}</b><span>{a}</span></div>)}</div>
+        <div className="grid" style={{ marginTop: 24 }}><Card><p>Track winners</p><h3>₹ 1,00,000</h3></Card></div>
       </Sec>
 
       <Sec id="about" eb="About" title="The Hackathon" sub="Two days of building, mentoring and shipping, hosted by CSEA at PSG Tech." alt>
         <div className="two rv">
           <div>{[["Team size", "2 – 4"], ["Mode", "Offline"], ["Venue", "PSG Tech, Coimbatore"], ["Eligibility", "All college students"]].map(([a, b]) => <div className="fact" key={a}><span>{a}</span><b>{b}</b></div>)}</div>
-          <ul className="sch">{[["Day 1", "09:00 Inauguration · 10:00 Hacking begins · 22:00 Mentor check-in"], ["Day 2", "10:00 Mid-review · 15:00 Final submissions · 17:00 Demos & awards"]].map(([a, b]) => <li key={a}><b>{a}</b><span>{b}</span></li>)}</ul>
+          <Schedule />
         </div>
       </Sec>
 
@@ -369,7 +387,8 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
             })}
             <div className="whub"><h3>{D.tracks[tr][0]}</h3><p>{D.tracks[tr][1]}</p></div>
           </div>
-          <div className="wgrid grid">{D.tracks.map(([t, p]) => <div className="card" key={t}><h3>{t}</h3><p>{p}</p></div>)}</div>
+          <div className="row wbtn"><button className="btn s o" onClick={() => setTrk(tr)}>View problem statements</button></div>
+          <div className="wgrid grid">{D.tracks.map(([t, p], i) => <div className="card" key={t} onClick={() => setTrk(i)}><h3>{t}</h3><p>{p}</p></div>)}</div>
         </div>
       </Sec>
 
@@ -401,6 +420,18 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
         <div className="grid rv">{D.ct.map(([a, b]) => <div key={a}><h4>{a}</h4><a href={`mailto:${b}`}>{b}</a></div>)}<div><h4>Follow</h4><a href="#/">Instagram</a> · <a href="#/">LinkedIn</a> · <a href="#/">X</a></div></div>
         © 2027 CSEA, PSG College of Technology
       </div></footer>
+      {trk !== null && (
+        <div className="modal in" onClick={() => setTrk(null)}>
+          <div className="card nh" style={{ maxWidth: 460, textAlign: "left" }} onClick={(e) => e.stopPropagation()}>
+            <span className="pill">Track</span><h3 style={{ margin: "10px 0 14px" }}>{D.tracks[trk][0]}</h3>
+            {PS[trk].map((q) => <p key={q} className="ps">{q}</p>)}
+            <div className="row" style={{ justifyContent: "flex-start", marginTop: 18 }}>
+              <button className="btn s" onClick={() => { setTrk(null); nav(user ? "profile" : "register"); }}>Register for this track</button>
+              <button className="btn s o" onClick={() => setTrk(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
