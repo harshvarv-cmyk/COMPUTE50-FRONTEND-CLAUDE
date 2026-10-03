@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type MouseEvent, type ReactNode } from "react";
 import Lenis from "lenis";
+import { Home as HomeIcon, LogIn, User as UserIcon, Activity, ArrowRight, Award, Building2, Calendar, CheckCircle2, Clock, Code2, Coffee, Cpu, FileText, Flame, Gift, GraduationCap, Globe, HeartHandshake, HelpCircle, Info, Key, Lightbulb, Lock, Mail, MapPin, Medal, Monitor, Phone, Rocket, Shield, ShieldAlert, ShieldCheck, Sparkles, Target, Terminal, Trophy, Users, Wifi, Zap, type LucideIcon } from "lucide-react";
 import "./style.css";
 import "./extra.css";
 
 /* ---------- Content (same placeholders as your original) ---------- */
-const START = new Date("2027-02-20T09:00:00+05:30");
+const START = new Date("2026-10-15T09:00:00+05:30");
 const FEE = 0; // set a number if a fee applies
 const D = {
-  al: ["Alumni Partner I", "Alumni Partner II", "Alumni Partner III"],
-  tracks: [["AI & Machine Learning", "Build intelligent systems that solve real-world campus and industry problems."], ["Web & Cloud", "Scalable, delightful products for the open web."], ["Cybersecurity", "Detect, defend and secure modern digital infrastructure."], ["IoT & Embedded", "Connected hardware that senses, decides and acts."], ["Open Innovation", "Bring your own problem statement."]],
-  ppl: [["Speaker Name", "Keynote Speaker, Company"], ["Judge Name", "Principal Engineer, Company"], ["Judge Name", "Founder, Startup"], ["Judge Name", "Professor, PSG Tech"]],
-  tiers: [["Gold", ["Sponsor A", "Sponsor B"]], ["Silver", ["Sponsor C", "Sponsor D", "Sponsor E"]], ["Community", ["Partner F", "Partner G"]]] as [string, string[]][],
-  ev: [["Code Sprint", "Dec 12", "Online", "Open"], ["Design Jam", "Jan 10", "Offline", "Open"], ["Cloud Workshop", "Jan 24", "Hybrid", "Upcoming"], ["Ideathon", "Feb 07", "Online", "Upcoming"]],
-  faq: [["Who can participate?", "Any undergraduate or postgraduate student from a recognised institution."], ["Is there a registration fee?", "Details will be announced here; payment status appears in your profile."], ["Is accommodation available?", "Yes, limited rooms for outstation teams. Request it from your profile."], ["Where is the venue?", "PSG College of Technology, Coimbatore."], ["What is the team size?", "2 to 4 members per team."]],
-  clubs: [["Club One", "One-line description of the club."], ["Club Two", "One-line description of the club."], ["Club Three", "One-line description of the club."], ["Club Four", "One-line description of the club."]],
-  ct: [["Organising Team", "organiser@example.com"], ["Sponsorship", "sponsors@example.com"], ["Registrations", "help@example.com"]],
+  tracks: [["AI & Machine Learning", "Build intelligent applications leveraging NLP, computer vision, generative AI, or predictive modeling."], ["Web3 & Decentralized Tech", "Explore smart contracts, decentralized finance, zero-knowledge proofs, and sovereign identity solutions."], ["HealthTech & BioInformatics", "Solve real-world healthcare challenges using data-driven insights and patient care innovations."], ["Smart Cities & Sustainability", "Develop green tech, energy management, smart mobility, and eco-friendly urban solutions."], ["Open Innovation", "Have a unique idea that crosses domain boundaries? Pitch your novel solution in open innovation."]],
+  ppl: [["Placeholder Speaker 1", "Distinguished Engineer, Tech Partner Corp", "Speaker"], ["Placeholder Judge 1", "VP of Engineering, Cloud Enterprise Solutions", "Judge"], ["Placeholder Mentor 1", "Senior Product Architect, InnovateX Labs", "Mentor"]],
+  tiers: [["Title", ["Title Sponsor Placeholder"]], ["Gold", ["Gold Sponsor Placeholder A", "Gold Sponsor Placeholder B"]], ["Silver", ["Silver Sponsor Placeholder"]], ["Community", ["Community Partner Placeholder"]]] as [string, string[]][],
+  ev: [["Compute 50 Main Hackathon", "Day 1 - Day 2", "Hackathon", "Upcoming", "The flagship 48-hour continuous coding marathon featuring top student teams across the nation."], ["Algorithmic Coding Challenge", "Day 1, 2:00 PM", "Coding Contest", "Upcoming", "Competitive programming contest designed to test extreme speed and precision algorithms."], ["Keynote & Tech Workshop", "Day 1, 5:00 PM", "Workshop", "Upcoming", "Interactive session by industry pioneers on AI engineering and system scaling."], ["Project Pitch & Grand Finale", "Day 2, 4:00 PM", "Valedictory", "Upcoming", "Final short-listed teams present live demos to executive judges."]],
+  faq: [["What is Compute 50?", "Compute 50 is a premier national-level 2-day hackathon organized by CSEA at PSG College of Technology, bringing together talented developers and innovators."], ["What is the team size limit for the hackathon?", "Teams can consist of 2 to 4 members. Individual registration is supported, but team formation must be finalized before the deadline."], ["Who is eligible to participate?", "Undergraduate and postgraduate students currently enrolled in recognized colleges or universities are eligible."], ["Is accommodation provided for outstation participants?", "Yes, basic accommodation facilities and meals will be arranged on campus for registered outstation teams."], ["Are hardware projects allowed?", "Yes, teams can build software, hardware, or hybrid solutions depending on the chosen problem track."]],
+  clubs: [["Computer Science and Engineering Association", "The primary student association driving technical excellence, hackathons, and software innovation at PSG Tech.", "CSEA"], ["Open Source Software Club", "Promoting open-source culture, collaborative development, and contribution to global repositories.", "OSSC"], ["Artificial Intelligence & Robotics Society", "Fostering machine learning research, automated hardware prototyping, and intelligent algorithms.", "AIRS"], ["Developer Student Club", "Empowering campus developers with modern web, mobile, and cloud computing skillsets.", "DSC"]],
+  ct: [["Venue & Address", "Department of CSE, PSG College of Technology, Peelamedu, Coimbatore - 641004"], ["Email Address", "csea@psgtech.ac.in"], ["Student Coordinators", "+91 98765 43210 / +91 91234 56789"]],
+  rules: ["All team members must be present on campus during check-in on Day 1.", "Code must be written from scratch during the 50-hour hackathon window. Open-source libraries and APIs are allowed.", "Plagiarism or using pre-existing full projects will result in immediate disqualification.", "Teams must commit code to the designated GitHub repository assigned during registration.", "Decision of the judging panel and organizing committee is final and binding."],
+  info: ["High-speed campus Wi-Fi credentials provided upon arrival.", "Complimentary meals, refreshments, and midnight snacks provided.", "College ID card or government photo ID mandatory for entry.", "24/7 security and medical assistance team on campus standby."],
 };
 const ini = (s: string) => s.split(" ").map((w) => w[0]).join("").slice(0, 2);
 
@@ -144,17 +146,190 @@ function useCountdown() {
   return { cd: [["Days", Math.floor(s / 86400)], ["Hours", Math.floor(s / 3600) % 24], ["Mins", Math.floor(s / 60) % 60], ["Secs", s % 60]] as [string, number][], clock: new Date(now).toLocaleTimeString("en-GB") };
 }
 
-const SCH = [[["09:00", "Inauguration"], ["10:00", "Hacking begins"], ["13:00", "Lunch and mentor round"], ["22:00", "Mentor check-in"]], [["10:00", "Mid-review"], ["13:00", "Lunch"], ["15:00", "Final submissions"], ["17:00", "Demos and awards"]]];
+interface WItem { label: string; icon: LucideIcon }
+function SpinWheel({ items, onChange, onPick, hub, label }: { items: WItem[]; onChange?: (i: number) => void; onPick?: (i: number) => void; hub: (i: number) => ReactNode; label: string }) {
+  const box = useRef<HTMLDivElement>(null);
+  const els = useRef<(HTMLButtonElement | null)[]>([]);
+  const st = useRef({ cur: 0, tgt: 0, raf: 0, last: 0, idle: 0, sel: 0, drag: false, px: 0, moved: false, size: 380 });
+  const [sel, setSel] = useState(0);
+  const n = items.length;
+  const cb = useRef({ onChange, n });
+  cb.current = { onChange, n };
+
+  const draw = () => {
+    const s = st.current, N = cb.current.n, R = s.size * 0.36;
+    for (let i = 0; i < N; i++) {
+      const el = els.current[i]; if (!el) continue;
+      const d = ((((i - s.cur) + N / 2) % N) + N) % N - N / 2;
+      const a = (d / N) * Math.PI * 2 - Math.PI / 2, near = Math.max(0, 1 - Math.abs(d));
+      el.style.transform = `translate(${(Math.cos(a) * R).toFixed(2)}px,${(Math.sin(a) * R).toFixed(2)}px) scale(${(0.8 + near * 0.4).toFixed(3)})`;
+      el.style.opacity = (0.45 + near * 0.55).toFixed(3);
+      el.style.zIndex = String(Math.round(near * 10));
+    }
+    const k = ((Math.round(s.cur) % N) + N) % N;
+    if (k !== s.sel) { s.sel = k; setSel(k); tone(640 + k * 55, 0.04, 0.03); cb.current.onChange?.(k); }
+  };
+  const tick = (t: number) => {
+    const s = st.current, dt = Math.min(0.05, (t - s.last) / 1000 || 0.016); s.last = t;
+    s.cur += (s.tgt - s.cur) * (1 - Math.exp(-dt * 9));
+    if (Math.abs(s.tgt - s.cur) < 0.0008 && !s.drag) { s.cur = s.tgt; draw(); s.raf = 0; return; }
+    draw(); s.raf = requestAnimationFrame(tick);
+  };
+  const kick = () => { const s = st.current; if (!s.raf) { s.last = performance.now(); s.raf = requestAnimationFrame(tick); } };
+  const snapSoon = () => { const s = st.current; clearTimeout(s.idle); s.idle = window.setTimeout(() => { s.tgt = Math.round(s.tgt); kick(); }, 130); };
+  const go = (i: number) => {
+    const s = st.current, base = Math.round(s.tgt); let d = i - (((base % n) + n) % n);
+    if (d > n / 2) d -= n; if (d < -n / 2) d += n;
+    s.tgt = base + d; kick();
+  };
+
+  useEffect(() => {
+    const el = box.current!, s = st.current;
+    const size = () => { s.size = el.clientWidth || 380; draw(); };
+    const ro = new ResizeObserver(size); ro.observe(el); size();
+    const wheel = (e: WheelEvent) => { e.preventDefault(); s.tgt += Math.max(-120, Math.min(120, e.deltaY)) / 260; kick(); snapSoon(); };
+    const move = (e: PointerEvent) => { if (!s.drag) return; const dx = e.clientX - s.px; if (Math.abs(dx) > 5) s.moved = true; s.px = e.clientX; s.tgt -= dx / 85; kick(); };
+    const up = () => { if (!s.drag) return; s.drag = false; snapSoon(); setTimeout(() => { s.moved = false; }, 0); };
+    el.addEventListener("wheel", wheel, { passive: false });
+    addEventListener("pointermove", move); addEventListener("pointerup", up);
+    return () => { ro.disconnect(); el.removeEventListener("wheel", wheel); removeEventListener("pointermove", move); removeEventListener("pointerup", up); cancelAnimationFrame(s.raf); clearTimeout(s.idle); s.raf = 0; };
+  }, []);
+
+  return (
+    <div ref={box} className="sw" data-lenis-prevent="" tabIndex={0} role="listbox" aria-label={label}
+      onPointerDown={(e) => { const s = st.current; s.drag = true; s.moved = false; s.px = e.clientX; }}
+      onKeyDown={(e) => {
+        const s = st.current;
+        if (["ArrowRight", "ArrowDown"].includes(e.key)) { e.preventDefault(); s.tgt = Math.round(s.tgt) + 1; kick(); }
+        else if (["ArrowLeft", "ArrowUp"].includes(e.key)) { e.preventDefault(); s.tgt = Math.round(s.tgt) - 1; kick(); }
+        else if (e.key === "Enter") onPick?.(s.sel);
+      }}>
+      <div className="swring" />
+      {items.map((it, i) => {
+        const I = it.icon;
+        return (
+          <button key={it.label} ref={(e) => { els.current[i] = e; }} role="option" aria-selected={sel === i} className={`swi ${sel === i ? "on" : ""}`}
+            onClick={() => { if (st.current.moved) return; if (i === sel) onPick?.(i); else go(i); }}>
+            <span className="swd"><I size={20} strokeWidth={1.8} /></span><span>{it.label}</span>
+          </button>
+        );
+      })}
+      <div className="swhub"><div key={sel}>{hub(sel)}</div></div>
+    </div>
+  );
+}
+
+function RadialMenu({ items, open, onPick, hub, label }: { items: WItem[]; open: boolean; onPick: (i: number) => void; hub: (i: number) => ReactNode; label: string }) {
+  const box = useRef<HTMLDivElement>(null), halo = useRef<HTMLDivElement>(null);
+  const els = useRef<(HTMLButtonElement | null)[]>([]);
+  const st = useRef({ ang: -Math.PI / 2, tgt: -Math.PI / 2, op: 0, opT: 0, raf: 0, last: 0, idle: 0, hi: 0, size: 440, step: 0 });
+  const [hi, setHi] = useState(0);
+  const n = items.length, step = (Math.PI * 2) / n;
+  st.current.step = step;
+  const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
+  const clamp = (v: number) => Math.max(0, Math.min(1, v));
+  const back = (t: number) => 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2);
+  const aOf = (i: number) => i * step - Math.PI / 2;
+  const nearest = (a: number) => Math.round((a + Math.PI / 2) / step);
+
+  const draw = () => {
+    const s = st.current, R = s.size * 0.36;
+    for (let i = 0; i < n; i++) {
+      const el = els.current[i]; if (!el) continue;
+      const t = clamp(s.op * 1.5 - (i / n) * 0.5), e = back(t), a = aOf(i);
+      const prox = Math.max(0, 1 - Math.abs(wrap(a - s.ang)) / (step * 1.15));
+      el.style.transform = `translate(${(Math.cos(a) * R * e).toFixed(2)}px,${(Math.sin(a) * R * e).toFixed(2)}px) scale(${(Math.max(0.01, e) * (1 + 0.2 * prox)).toFixed(3)})`;
+      el.style.opacity = clamp(t * 1.4).toFixed(3);
+    }
+    if (halo.current) {
+      const e = back(clamp(s.op * 1.5 - 0.3));
+      halo.current.style.transform = `translate(${(Math.cos(s.ang) * R * e).toFixed(2)}px,${(Math.sin(s.ang) * R * e).toFixed(2)}px) scale(${Math.max(0.01, e).toFixed(3)})`;
+      halo.current.style.opacity = clamp(s.op * 1.6).toFixed(3);
+    }
+    const k = ((nearest(s.ang) % n) + n) % n;
+    if (k !== s.hi) { s.hi = k; setHi(k); tone(620 + k * 60, 0.04, 0.03); }
+  };
+  const tick = (t: number) => {
+    const s = st.current, dt = Math.min(0.05, (t - s.last) / 1000 || 0.016); s.last = t;
+    s.op += (s.opT - s.op) * (1 - Math.exp(-dt * 6.5));
+    const dA = wrap(s.tgt - s.ang); s.ang += dA * (1 - Math.exp(-dt * 12));
+    if (Math.abs(dA) < 0.0005 && Math.abs(s.opT - s.op) < 0.002) { s.op = s.opT; s.ang = s.tgt; draw(); s.raf = 0; return; }
+    draw(); s.raf = requestAnimationFrame(tick);
+  };
+  const kick = () => { const s = st.current; if (!s.raf) { s.last = performance.now(); s.raf = requestAnimationFrame(tick); } };
+  const snapSoon = () => { const s = st.current; clearTimeout(s.idle); s.idle = window.setTimeout(() => { s.tgt = aOf(nearest(s.tgt)); kick(); }, 140); };
+  const stepBy = (d: number) => { const s = st.current; s.tgt = aOf(nearest(s.tgt) + d); kick(); };
+  const aim = (x: number, y: number, set: boolean) => {
+    const r = box.current!.getBoundingClientRect(), dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2), dist = Math.hypot(dx, dy);
+    if (dist < r.width * 0.2) return -1;
+    const a = Math.atan2(dy, dx), s = st.current;
+    if (set) { s.tgt = s.ang + wrap(a - s.ang); kick(); snapSoon(); }
+    return ((nearest(a) % n) + n) % n;
+  };
+
+  useEffect(() => { st.current.opT = open ? 1 : 0; kick(); }, [open]);
+  useEffect(() => {
+    const el = box.current!, s = st.current; let lastStep = 0;
+    const size = () => { s.size = el.clientWidth || 440; draw(); };
+    const ro = new ResizeObserver(size); ro.observe(el); size();
+    const wheel = (e: WheelEvent) => { e.preventDefault(); const now = performance.now(); if (now - lastStep > 110 && Math.abs(e.deltaY) > 2) { lastStep = now; stepBy(e.deltaY > 0 ? 1 : -1); } };
+    el.addEventListener("wheel", wheel, { passive: false });
+    return () => { ro.disconnect(); el.removeEventListener("wheel", wheel); cancelAnimationFrame(s.raf); clearTimeout(s.idle); s.raf = 0; };
+  }, []);
+
+  return (
+    <div ref={box} className="rm" data-lenis-prevent="" tabIndex={0} role="menu" aria-label={label}
+      onPointerMove={(e) => { aim(e.clientX, e.clientY, true); }}
+      onPointerDown={(e) => { aim(e.clientX, e.clientY, true); }}
+      onClick={(e) => { const k = aim(e.clientX, e.clientY, false); if (k >= 0) onPick(k); }}
+      onKeyDown={(e) => {
+        if (["ArrowRight", "ArrowDown"].includes(e.key)) { e.preventDefault(); stepBy(1); }
+        else if (["ArrowLeft", "ArrowUp"].includes(e.key)) { e.preventDefault(); stepBy(-1); }
+        else if (e.key === "Enter") onPick(st.current.hi);
+      }}>
+      <div className="rmring" /><div className="rmhalo" ref={halo} />
+      {items.map((it, i) => { const I = it.icon; return (
+        <button key={it.label} type="button" role="menuitem" ref={(e) => { els.current[i] = e; }} className={`rmi ${hi === i ? "on" : ""}`}>
+          <span className="rmd"><I size={20} strokeWidth={1.8} /></span><span>{it.label}</span>
+        </button>); })}
+      <div className="swhub"><div key={hi}>{hub(hi)}</div></div>
+    </div>
+  );
+}
+
+const Ico = ({ i: I, s = 24 }: { i: LucideIcon; s?: number }) => <span className="ico"><I size={s} strokeWidth={1.8} /></span>;
+const TI: LucideIcon[] = [Cpu, Shield, Activity, Zap, Lightbulb];
+const INFO_I: LucideIcon[] = [Wifi, Coffee, Key, ShieldCheck];
+const HLI: LucideIcon[][] = [[Award, Building2], [Users, Flame], [Zap, Trophy]];
+const SCH: string[][][] = [
+  [["08:30 AM – 10:00 AM", "Reporting & Verification", "Check-in, badge collection, and kit distribution.", "Main Auditorium Hall"], ["10:00 AM – 11:00 AM", "Inauguration Ceremony", "Welcome address, keynote speaker, and track briefing.", "Main Auditorium"], ["11:00 AM", "Hackathon Hacking Starts", "Problem statements unlocked and live coding commences.", "CS Department Labs"], ["06:00 PM – 08:00 PM", "Mentorship Round 1", "Technical reviews and feedback from industry mentors.", "Lab Complex 2"]],
+  [["09:00 AM – 11:00 AM", "Mentorship Round 2", "Progress evaluation and prototype validation.", "Lab Complex 2"], ["02:00 PM", "Final Code Freeze & Submission", "Project submission window closes.", "Online Portal"], ["03:00 PM – 05:00 PM", "Final Judging & Presentation", "Top teams pitch to panel of judges.", "Seminar Hall 1"], ["05:30 PM – 06:30 PM", "Valedictory & Prize Distribution", "Winners announcement and closing remarks.", "Main Auditorium"]],
+];
 function Schedule() {
   const [d, setD] = useState(0);
   return (
     <div>
       <div className="tabs">{["Day 1", "Day 2"].map((t, i) => <button key={t} className={d === i ? "on" : ""} onClick={() => setD(i)}>{t}</button>)}</div>
-      <ol className="tl2" key={d}>{SCH[d].map(([t, e], i) => <li key={e} style={{ "--i": i } as CSSProperties}><b>{t}</b><span>{e}</span></li>)}</ol>
+      <ol className="tl2" key={d}>{SCH[d].map(([t, e, x, v], i) => <li key={e} style={{ "--i": i } as CSSProperties}><b><Clock size={14} />{t}</b><span>{e}<small>{x}</small><small className="vn"><MapPin size={12} />{v}</small></span></li>)}</ol>
     </div>
   );
 }
-const PS = [["Smart campus assistant for timetables and attendance", "Detect misinformation in student communities"], ["Offline-first learning portal for low bandwidth", "Real-time collaborative code review tool"], ["Detect phishing in campus emails", "Secure authentication for lab systems"], ["Low-cost air-quality monitor with alerts", "Smart energy meter for hostels"], ["Any problem you care about", "Pitch your own idea at registration"]];
+const PSL = [
+  { id: "PS-01", t: 0, title: "Real-Time Edge AI for Disaster Management", lv: "Hard" },
+  { id: "PS-02", t: 1, title: "Decentralized Academic Credential Verification System", lv: "Medium" },
+  { id: "PS-03", t: 2, title: "Predictive Patient Triage Platform for Emergency Rooms", lv: "Hard" },
+  { id: "PS-04", t: 3, title: "Intelligent Micro-Grid Energy Distribution Optimizer", lv: "Medium" },
+];
+function PsCard({ q }: { q: (typeof PSL)[number] }) {
+  return (
+    <div className="psc">
+      <div className="pst"><span className="pid">{q.id}</span><span className={`lv ${q.lv === "Hard" ? "hard" : "med"}`}>{q.lv}</span></div>
+      <h4>{q.title}</h4>
+      <small><Lock size={13} />Detailed spec unlocks on Day 1</small>
+    </div>
+  );
+}
+const PCOUNT = [4, 3, 3, 4, 2];
 
 function Countdown() {
   const { cd } = useCountdown();
@@ -225,7 +400,7 @@ export default function App() {
   useEffect(() => { // hover + click sounds (audio starts after the first tap, per browser rules)
     let last: Element | null = null;
     const over = (e: PointerEvent) => {
-      const t = (e.target as HTMLElement).closest?.(".btn,.links button,.card,.rwseg,.wseg,#rwbtn,.faqq");
+      const t = (e.target as HTMLElement).closest?.(".btn,.links button,.card,.swi,.rmi,#rwbtn,.faqq");
       if (t && t !== last) { last = t; tone(920, 0.05, 0.028); } else if (!t) last = null;
     };
     const down = (e: PointerEvent) => {
@@ -253,7 +428,6 @@ export default function App() {
     ["✦", "Events", () => nav("home", "events")], ["?", "FAQ", () => nav("home", "faq")], ["✉", "Contact", () => nav("home", "contact")],
     user ? ["◉", "Profile", () => nav("profile")] : ["◉", "Login", () => nav("login")],
   ];
-  const [hi, setHi] = useState(0);
 
   return (
     <>
@@ -266,11 +440,8 @@ export default function App() {
       <div className={`rwol ${wheel ? "open" : ""}`}>
         <div className="rwbg" onClick={() => setWheel(false)} />
         <div className="rwheel">
-          {items.map(([ic, name, fn], i) => {
-            const a = (i / items.length) * Math.PI * 2 - Math.PI / 2;
-            return <div key={name} className={`rwseg ${hi === i ? "hi" : ""}`} style={{ "--ux": Math.cos(a), "--uy": Math.sin(a) } as CSSProperties} onMouseEnter={() => setHi(i)} onClick={fn}><div className="rdot">{ic}</div><span>{name}</span></div>;
-          })}
-          <div className="rwhub"><h3>{items[hi][1]}</h3><p>Tap to jump</p></div>
+          <RadialMenu label="Quick menu" open={wheel} items={items.map(([, name], i) => ({ label: name, icon: [HomeIcon, Info, Target, Calendar, HelpCircle, Mail, user ? UserIcon : LogIn][i] }))}
+            onPick={(i) => items[i][2]()} hub={(i) => <><h3>{items[i][1]}</h3><p>Move around the ring, scroll, or use arrow keys · click to open</p></>} />
         </div>
         <button className="rwback" onClick={() => setWheel(false)}>← Back</button>
       </div>
@@ -300,7 +471,7 @@ export default function App() {
       {modal && (
         <div className={`modal ${modalIn ? "in" : ""}`} onClick={() => setModal(false)}>
           <div className="card nh" onClick={(e) => e.stopPropagation()}>
-            <h3>Join the WhatsApp group</h3><p style={{ margin: "8px 0 20px" }}>Get updates, find teammates and ask questions.</p>
+            <span className="pill">ANNOUNCEMENT</span><h3 style={{ marginTop: 10 }}>Registrations for Compute 50 Hackathon are now officially open!</h3><p style={{ margin: "8px 0 20px" }}>Join the WhatsApp group for updates and teammates.</p>
             <div className="row"><a className="btn" href="https://chat.whatsapp.com/" target="_blank" rel="noreferrer">Join group</a><button className="btn o" onClick={() => setModal(false)}>Dismiss</button></div>
           </div>
         </div>
@@ -340,40 +511,42 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
         <div className="scr" /><i className="hud tl" /><i className="hud tr" /><i className="hud bl" /><i className="hud br" />
         <div className="hud-top"><span>COMPUTE // 50</span><HudClock /></div>
         <div className="w">
-          <div className="eb rv">CSEA · PSG College of Technology</div>
+          <div className="eb rv">CSEA, PSG Tech Presents · 2-Day National Hackathon</div>
           <h1><Letters s="Compute" /> <span><Letters s="50" off={8} /></span></h1>
-          <p className="tag rv">Build what's next in 48 hours.<br />Ship <Typer words={["intelligent systems", "secure platforms", "connected hardware", "your wildest idea"]} /></p>
-          <p className="dt rv">Feb 20 – 21, 2027 · Coimbatore</p>
+          <p className="tag rv">50 Hours of Non-Stop Code, Innovation, &amp; Engineering Excellence.<br />Ship <Typer words={["intelligent systems", "secure platforms", "connected hardware", "your wildest idea"]} /></p>
+          <p className="dt rv">October 15 – 16, 2026 · PSG College of Technology, Coimbatore</p>
           <Countdown />
           <div className="row rv">
             {user ? <button className="btn" onClick={() => nav("profile")}>My profile</button> : <><button className="btn" onClick={() => nav("register")}>Register</button><button className="btn o" onClick={() => nav("login")}>Login</button></>}
           </div>
-          <div className="inst rv">{[["PSG", "PSG Tech"], ["CS", "CSEA"], ["IN", "Infinitum"]].map(([a, b]) => <span className="mk" key={a}><i>{a}</i>{b}</span>)}</div>
+          <div className="inst rv">{[["PSG", "PSG Tech"], ["CS", "CSEA Department"]].map(([a, b]) => <span className="mk" key={a}><i>{a}</i>{b}</span>)}</div>
         </div>
       </section>
 
-      <div className="mq"><div className="mt">{Array(4).fill(["Build", "Ship", "Compete", "48 Hours", "₹5,00,000", "5 Tracks"]).flat().map((t, i) => <span key={i}>{t}</span>)}</div></div>
+      <div className="mq"><div className="mt">{Array(4).fill(["Build", "Ship", "Compete", "50 Hours", "₹ 2,50,000+", "5 Tracks"]).flat().map((t, i) => <span key={i}>{t}</span>)}</div></div>
 
       <section className="stats"><div className="w"><div className="grid">
-        {[[48, "", "Hours of building"], [5, "", "Tracks"], [500, "+", "Hackers (target)"], [25, "+", "Mentors"]].map(([n, x, l]) => <div key={l as string} className="rv"><b><CountUp to={n as number} suffix={x as string} /></b><span>{l}</span></div>)}
+        {[[50, "", "Hours of continuous code"], [5, "", "Tracks"], [500, "+", "Participant teams"], [1000, "+", "CSEA members"]].map(([n, x, l]) => <div key={l as string} className="rv"><b><CountUp to={n as number} suffix={x as string} /></b><span>{l}</span></div>)}
       </div>
-      <div className="rv reg"><div className="regtop"><span><CountUp to={128} /> of 300 teams registered</span><b>43%</b></div><div className="bar"><i /></div></div>
+      <div className="rv reg"><div className="regtop"><span><CountUp to={128} /> of 500 teams registered</span><b>26%</b></div><div className="bar"><i /></div></div>
       </div></section>
 
       <Sec id="powered" eb="Powered by" title="Our Partners" alt>
-        <div className="grid"><Card><span className="pill">Title Sponsor</span><h3 style={{ marginTop: 12 }}>Your Brand Here</h3></Card>
-          {D.al.map((a) => <Card key={a}><span className="pill">Alumni</span><h3 style={{ marginTop: 12 }}>{a}</h3></Card>)}</div>
+        <div className="grid">{[["PSG College of Technology", "Leading autonomous institute committed to engineering and research perfection."], ["CSEA Association", "Computer Science & Engineering Association organizing high-impact technical symposiums."], ["National Innovation Hub", "Welcoming 500+ participant teams from top engineering institutions across India."]].map(([a, b], i) => <Card key={a}><Ico i={[ShieldCheck, Award, Users][i]} /><span className="pill">Powered by</span><h3 style={{ marginTop: 12 }}>{a}</h3><p>{b}</p></Card>)}</div>
       </Sec>
 
       <Sec id="prize" eb="Prize Pool" title="Rewards worth">
-        <div className="big rv"><CountUp to={500000} prefix="₹ " /></div>
-        <div className="podium rv">{[["2nd", "₹ 1,25,000", "2"], ["1st", "₹ 2,00,000", "1"], ["3rd", "₹ 75,000", "3"]].map(([a, b, n]) => <div key={a} className={`pod p${n}`}><b>{b}</b><span>{a}</span></div>)}</div>
-        <div className="grid" style={{ marginTop: 24 }}><Card><p>Track winners</p><h3>₹ 1,00,000</h3></Card></div>
+        <div className="big rv"><CountUp to={250000} prefix="₹ " suffix="+" /></div>
+        <p className="sub rv">Compete for substantial cash prizes, trophies, sponsor bounties, and career opportunities.</p>
+        <div className="podium rv">{[["2nd", "₹ 60,000", "2", "Runner Up"], ["1st", "₹ 1,00,000", "1", "Grand Winner"], ["3rd", "₹ 40,000", "3", "Second Runner Up"]].map(([a, b, n, t]) => <div key={a} className={`pod p${n}`}>{n === "1" ? <Trophy size={28} /> : n === "2" ? <Medal size={26} /> : <Award size={26} />}<b>{b}</b><span>{a}</span><small>{t}</small></div>)}</div>
+        <p className="sub rv" style={{ marginTop: 18 }}>1st place also gets a winner trophy, direct internship interviews and swag kits.</p>
+        <div className="grid" style={{ marginTop: 24 }}><Card><Ico i={Gift} /><p>Category Prizes · Track Best Hacks</p><h3><CountUp to={50000} prefix="₹ " suffix=" total" /></h3><p>Best Women Team · Best Hardware Innovation · Best Web3 Build</p></Card></div>
       </Sec>
 
-      <Sec id="about" eb="About" title="The Hackathon" sub="Two days of building, mentoring and shipping, hosted by CSEA at PSG Tech." alt>
-        <div className="two rv">
-          <div>{[["Team size", "2 – 4"], ["Mode", "Offline"], ["Venue", "PSG Tech, Coimbatore"], ["Eligibility", "All college students"]].map(([a, b]) => <div className="fact" key={a}><span>{a}</span><b>{b}</b></div>)}</div>
+      <Sec id="about" eb="About the hackathon" title="Empowering Next-Gen Innovators" sub="Compute 50 is designed to test your problem-solving limits, rapid prototyping, and engineering collaborative skills." alt>
+        <div className="grid">{[["Rapid Prototyping", "Transform raw problem statements into working software prototypes within 48 continuous hours with technical mentor guidance."], ["Real Industry Challenges", "Tackle tracks curated alongside industry mentors, focusing on AI, decentralization, sustainability, and open domain builds."], ["Collaborative Ecosystem", "Connect with fellow student hackers, tech leaders, sponsor engineers, and academic veterans in an encouraging community."]].map(([a, b], i) => <Card key={a}><Ico i={[Rocket, Target, HeartHandshake][i]} /><h3>{a}</h3><p>{b}</p></Card>)}</div>
+        <div className="two rv" style={{ marginTop: 28 }}>
+          <div>{[["Team size", "2 - 4 Members"], ["Mode", "In-Person (Offline)"], ["Venue", "PSG College of Technology, Peelamedu, Coimbatore"], ["Eligibility", "UG / PG Students"]].map(([a, b], i) => <div className="fact" key={a}><span className="fl"><Ico i={[Users, Monitor, MapPin, GraduationCap][i]} s={16} />{a}</span><b>{b}</b></div>)}</div>
           <Schedule />
         </div>
       </Sec>
@@ -381,51 +554,65 @@ function Home({ user, nav, say }: { user: User | null; nav: (r: Route, id?: stri
       <Sec id="tracks" eb="Tracks" title="Choose your domain" sub="Pick a track and tackle its problem statements.">
         <div className="rv">
           <div className="wheel">
-            {D.tracks.map(([t], i) => {
-              const a = (i / D.tracks.length) * Math.PI * 2 - Math.PI / 2;
-              return <div key={t} className={`wseg ${tr === i ? "on" : ""}`} style={{ "--ux": Math.cos(a), "--uy": Math.sin(a) } as CSSProperties} onMouseEnter={() => setTr(i)} onClick={() => setTr(i)}><i className="wdot" /><span>{t}</span></div>;
-            })}
-            <div className="whub"><h3>{D.tracks[tr][0]}</h3><p>{D.tracks[tr][1]}</p></div>
+            <SpinWheel label="Hackathon tracks" items={D.tracks.map(([t], i) => ({ label: t, icon: TI[i] }))} onChange={setTr} onPick={(i) => setTrk(i)}
+              hub={(i) => <><Ico i={TI[i]} s={22} /><h3>{D.tracks[i][0]}</h3><p>{D.tracks[i][1]}</p><small className="swh">Click to view problem statements</small></>} />
           </div>
           <div className="row wbtn"><button className="btn s o" onClick={() => setTrk(tr)}>View problem statements</button></div>
-          <div className="wgrid grid">{D.tracks.map(([t, p], i) => <div className="card" key={t} onClick={() => setTrk(i)}><h3>{t}</h3><p>{p}</p></div>)}</div>
+          <div className="wgrid grid">{D.tracks.map(([t, p], i) => <div className="card" key={t} onClick={() => setTrk(i)}><div className="trh"><Ico i={TI[i]} /><span className="pill">{PCOUNT[i]} problem statements</span></div><h3>{t}</h3><p>{p}</p><span className="more">Explore track details <ArrowRight size={14} /></span></div>)}</div>
+        </div>
+        <div className="rv psprev">
+          <div className="psh"><h3><FileText size={20} />Problem statements preview</h3><span className="pill">Released on Day 1</span></div>
+          <div className="psgrid">{PSL.map((q) => <PsCard key={q.id} q={q} />)}</div>
         </div>
       </Sec>
 
-      <Sec id="people" eb="People" title="Speakers & Judges" alt>
-        <div className="grid">{D.ppl.map(([n, d], i) => <Card key={i}><div className="av">{ini(n)}</div><h3>{n}</h3><p>{d}</p></Card>)}</div>
+      <Sec id="rules" eb="Rules" title="Rules & participant info" alt>
+        <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))" }}>
+          <Card className="nh"><Ico i={ShieldAlert} /><h3>Hackathon rules &amp; guidelines</h3>{D.rules.map((r) => <p key={r} className="ps ic"><CheckCircle2 size={17} />{r}</p>)}</Card>
+          <Card className="nh"><Ico i={Info} /><h3>Important participant information</h3>{D.info.map((r, i) => { const I = INFO_I[i]; return <p key={r} className="ps ic"><I size={17} />{r}</p>; })}</Card>
+        </div>
       </Sec>
 
-      <Sec id="sponsors" eb="Sponsors" title="Backed by the best">
+      <Sec id="people" eb="People" title="Speakers & Judges">
+        <div className="grid">{D.ppl.map(([n, d, ty], i) => <Card key={i}><div className="av">{ini(n)}</div><span className="pill">{ty}</span><h3>{n}</h3><p>{d}</p></Card>)}</div>
+      </Sec>
+
+      <Sec id="sponsors" eb="Sponsors" title="Backed by the best" alt>
         {D.tiers.map(([tier, list]) => (
           <div key={tier}><h3 className="rv" style={{ margin: "20px 0 12px", color: "var(--mut)", fontSize: 13, letterSpacing: ".1em", textTransform: "uppercase" }}>{tier}</h3>
             <div className="grid">{list.map((s) => <Card key={s}><span className="mk"><i>{ini(s)}</i><b>{s}</b></span></Card>)}</div></div>))}
       </Sec>
 
-      <Sec id="events" eb="Series" title="Compute 50 Events" sub="Warm-up events leading to the main hackathon." alt>
-        <div className="grid">{D.ev.map(([n, d, m, s]) => (
-          <Card key={n}><span className={`pill ${s === "Open" ? "ok" : ""}`}>{s}</span><h3 style={{ marginTop: 12 }}>{n}</h3><p>{d} · {m}</p>
-            <button className="btn s o" style={{ marginTop: 16 }} disabled={s !== "Open"} onClick={() => (user ? say(`Registered for ${n}`) : nav("register"))}>Register</button></Card>))}</div>
+      <Sec id="events" eb="Series" title="Compute 50 Events" sub="Warm-up events leading to the main hackathon.">
+        <div className="grid">{D.ev.map(([n, d, m, s, x]) => (
+          <Card key={n}><Ico i={Calendar} /><span className="pill ok">{s}</span><h3 style={{ marginTop: 12 }}>{n}</h3><p>{x}</p><p>{d} · {m}</p>
+            <button className="btn s o" style={{ marginTop: 16 }} disabled={s === "Closed"} onClick={() => (user ? say(`Registered for ${n}`) : nav("register"))}>Register</button></Card>))}</div>
       </Sec>
 
-      <Sec id="faq" eb="FAQ" title="Questions, answered">
+      <Sec id="faq" eb="FAQ" title="Questions, answered" alt>
         <div className="rv" style={{ maxWidth: 720 }}>{D.faq.map(([q, a], i) => (
           <div className="faqi" key={q}>
-            <button className="faqq" aria-expanded={openQ === i} onClick={() => setOpenQ(openQ === i ? null : i)}><span>{q}</span><i className="faqicon" /></button>
+            <button className="faqq" aria-expanded={openQ === i} onClick={() => setOpenQ(openQ === i ? null : i)}><span className="fl"><HelpCircle size={17} />{q}</span><i className="faqicon" /></button>
             <div className={`faqa-wrap ${openQ === i ? "open" : ""}`}><div className="faqa-inner"><p>{a}</p></div></div>
           </div>))}</div>
       </Sec>
 
       <footer id="contact"><div className="w">
-        <div className="grid rv">{D.ct.map(([a, b]) => <div key={a}><h4>{a}</h4><a href={`mailto:${b}`}>{b}</a></div>)}<div><h4>Follow</h4><a href="#/">Instagram</a> · <a href="#/">LinkedIn</a> · <a href="#/">X</a></div></div>
-        © 2027 CSEA, PSG College of Technology
+        <div className="grid rv">{D.ct.map(([a, b], i) => <div key={a}><Ico i={[MapPin, Mail, Phone][i]} s={18} /><h4>{a}</h4>{b.includes("@") ? <a href={`mailto:${b}`}>{b}</a> : <p>{b}</p>}</div>)}<div><Ico i={Clock} s={18} /><h4>Office hours</h4><p>Monday – Saturday: 9:00 AM – 6:00 PM IST</p></div></div>
+        National 2-Day Hackathon hosted by the Computer Science and Engineering Association (CSEA) at PSG College of Technology. © 2026
       </div></footer>
       {trk !== null && (
         <div className="modal in" onClick={() => setTrk(null)}>
-          <div className="card nh" style={{ maxWidth: 460, textAlign: "left" }} onClick={(e) => e.stopPropagation()}>
-            <span className="pill">Track</span><h3 style={{ margin: "10px 0 14px" }}>{D.tracks[trk][0]}</h3>
-            {PS[trk].map((q) => <p key={q} className="ps">{q}</p>)}
-            <div className="row" style={{ justifyContent: "flex-start", marginTop: 18 }}>
+          <div className="card nh psm" onClick={(e) => e.stopPropagation()}>
+            <button className="x" aria-label="Close" onClick={() => setTrk(null)}>×</button>
+            <div className="psmh"><Ico i={TI[trk]} s={26} /><div><span className="pill">Track {trk + 1} of {D.tracks.length}</span><h3>{D.tracks[trk][0]}</h3></div></div>
+            <p className="psd">{D.tracks[trk][1]}</p>
+            <div className="pslist">
+              {PSL.filter((q) => q.t === trk).map((q) => <PsCard key={q.id} q={q} />)}
+              {trk === 4 && <div className="psc"><h4>Bring your own problem</h4><small>Pitch a novel solution that crosses domain boundaries. Any domain is welcome.</small></div>}
+            </div>
+            <p className="psn">{PCOUNT[trk]} problem statements in this track · all released on Day 1</p>
+            <div className="row" style={{ justifyContent: "flex-start", gap: 10, marginTop: 18 }}>
               <button className="btn s" onClick={() => { setTrk(null); nav(user ? "profile" : "register"); }}>Register for this track</button>
               <button className="btn s o" onClick={() => setTrk(null)}>Close</button>
             </div>
@@ -442,10 +629,13 @@ function About() {
     <>
       <section><div className="w"><div className="eb rv">About</div><h1 className="rv" style={{ fontSize: "clamp(36px,6vw,60px)" }}>Where ideas compute.</h1></div></section>
       <section className="alt"><div className="w"><div className="grid">
-        {[["PSG Tech", "PSG College of Technology, Coimbatore, is a leading engineering institution known for academic rigour and industry ties."], ["CSEA", "The Computer Science and Engineering Association runs technical events, workshops and talks led by students."], ["Compute 50", "A two-day hackathon built around one question: what can you ship when the clock is ticking?"]].map(([t, p]) => <Card key={t}><h3>{t}</h3><p>{p}</p></Card>)}
+        {([["About PSG College of Technology", "PSG College of Technology, established in 1951 by PSG & Sons’ Charities Trust, is an autonomous government-aided engineering institution in Coimbatore, Tamil Nadu. Renowned for academic quality and industry collaborations, PSG Tech continues to nurture leaders across engineering domains.", ["NIRF Top Ranked Engineering Institution", "70+ Years of Academic Innovation"]], ["About CSEA", "The Computer Science and Engineering Association (CSEA) is the flagship student body of the CSE Department at PSG College of Technology. CSEA organizes technical symposiums, hackathons, guest lectures, and coding competitions to foster student developer communities.", ["1000+ Active Student Members", "Annual Flagship Tech Festival Host"]], ["About Compute 50", "Compute 50 represents 50 continuous hours of technical creation and engineering challenges. Conceived as a celebration of computing milestone, Compute 50 brings together developers from across the country to craft impactful solutions to pressing real-world challenges.", ["50 Hours Continuous Coding", "National Innovation Challenge"]]] as [string, string, string[]][]).map(([t, p, hl], i) => <Card key={t}><Ico i={[Building2, Code2, Cpu][i]} /><h3>{t}</h3><p>{p}</p><div>{hl.map((h, j) => { const I = HLI[i][j]; return <span key={h} className="pill"><I size={12} /> {h}</span>; })}</div></Card>)}
       </div></div></section>
+      <Sec id="theme" eb="2026 Edition" title={'Event Theme: "Engineering The Future"'} sub="The overarching theme for Compute 50 centers on bridging bleeding-edge technological paradigms with sustainable societal needs. Teams are encouraged to push boundaries across artificial intelligence, decentralized architecture, urban infrastructure, and human wellness." alt>
+        <div className="grid">{[["Global Impact", "Solutions designed for real scale and global usability."], ["Ethical & Secure", "Focus on data privacy, safety, and responsible engineering."], ["Functional MVP", "Working prototypes with real-time execution capability."]].map(([a, b], i) => <Card key={a}><Ico i={[Globe, Shield, Terminal][i]} /><h3>{a}</h3><p>{b}</p></Card>)}</div>
+      </Sec>
       <Sec id="clubs" eb="Community" title="Affiliated clubs">
-        <div className="grid">{D.clubs.map(([n, d]) => <Card key={n}><span className="mk"><i>{ini(n)}</i><b>{n}</b></span><p style={{ marginTop: 10 }}>{d}</p></Card>)}</div>
+        <div className="grid">{D.clubs.map(([n, d, ab]) => <Card key={n}><span className="mk"><i>{ab}</i><b>{n}</b></span><p style={{ marginTop: 10 }}>{d}</p></Card>)}</div>
       </Sec>
     </>
   );
@@ -496,7 +686,7 @@ function Profile({ user, team, paid, accom, say, setUser, setTeam, setPaid, setA
             <button className="btn s" onClick={() => { setUser(d); setEdit(false); say("Details saved"); }}>Save changes</button></>
             : <><p>{user.email}</p><p>{user.phone || "Add your phone"}</p><p>{user.college || "Add your college"} {user.dept && `· ${user.dept}`} {user.year}</p><button className="btn s o" style={{ marginTop: 14 }} onClick={() => setEdit(true)}>Edit details</button></>}
         </Card>
-        <Card className="nh"><h3>Registration</h3><p>Compute 50 · Feb 20 – 21, 2027</p>
+        <Card className="nh"><h3>Registration</h3><p>Compute 50 · Oct 15 – 16, 2026</p>
           <div className="st" style={{ marginTop: 12 }}><span>Status</span><span className={`pill ${status === "Confirmed" ? "ok" : "wt"}`}>{status}</span></div></Card>
         <Card className="nh"><h3>Hackathon team</h3>
           {team ? <><p><b>{team.name}</b></p>{team.members.map((m, i) => <p key={m}>{m} {i === 0 && <span className="pill">Leader</span>}</p>)}
