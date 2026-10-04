@@ -1,0 +1,68 @@
+import { ScheduleItem } from '../types/hackathon';
+
+export const mockSchedule: ScheduleItem[] = [
+  {
+    id: 'sch-1',
+    day: 'Day 1',
+    time: '08:30 AM - 10:00 AM',
+    title: 'Reporting & Verification',
+    description: 'Check-in, badge collection, and kit distribution.',
+    venue: 'Main Auditorium Hall',
+  },
+  {
+    id: 'sch-2',
+    day: 'Day 1',
+    time: '10:00 AM - 11:00 AM',
+    title: 'Inauguration Ceremony',
+    description: 'Welcome address, keynote speaker, and track briefing.',
+    venue: 'Main Auditorium',
+  },
+  {
+    id: 'sch-3',
+    day: 'Day 1',
+    time: '11:00 AM',
+    title: 'Hackathon Hacking Starts',
+    description: 'Problem statements unlocked and live coding commences.',
+    venue: 'CS Department Labs',
+  },
+  {
+    id: 'sch-4',
+    day: 'Day 1',
+    time: '06:00 PM - 08:00 PM',
+    title: 'Mentorship Round 1',
+    description: 'Technical reviews and feedback from industry mentors.',
+    venue: 'Lab Complex 2',
+  },
+  {
+    id: 'sch-5',
+    day: 'Day 2',
+    time: '09:00 AM - 11:00 AM',
+    title: 'Mentorship Round 2',
+    description: 'Progress evaluation and prototype validation.',
+    venue: 'Lab Complex 2',
+  },
+  {
+    id: 'sch-6',
+    day: 'Day 2',
+    time: '02:00 PM',
+    title: 'Final Code Freeze & Submission',
+    description: 'Project submission window closes.',
+    venue: 'Online Portal',
+  },
+  {
+    id: 'sch-7',
+    day: 'Day 2',
+    time: '03:00 PM - 05:00 PM',
+    title: 'Final Judging & Presentation',
+    description: 'Top teams pitch to panel of judges.',
+    venue: 'Seminar Hall 1',
+  },
+  {
+    id: 'sch-8',
+    day: 'Day 2',
+    time: '05:30 PM - 06:30 PM',
+    title: 'Valedictory & Prize Distribution',
+    description: 'Winners announcement and closing remarks.',
+    venue: 'Main Auditorium',
+  },
+];

@@ -1,0 +1,27 @@
+import React, { ReactNode } from 'react';
+
+interface ContainerProps {
+  children: ReactNode;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+}
+
+export const Container: React.FC<ContainerProps> = ({
+  children,
+  className = '',
+  size = 'lg',
+}) => {
+  const sizeClasses = {
+    sm: 'max-w-md',
+    md: 'max-w-3xl',
+    lg: 'max-w-[1200px]',
+    xl: 'max-w-7xl',
+    full: 'max-w-full',
+  };
+
+  return (
+    <div className={`mx-auto px-4 sm:px-6 lg:px-8 ${sizeClasses[size]} ${className}`}>
+      {children}
+    </div>
+  );
+};

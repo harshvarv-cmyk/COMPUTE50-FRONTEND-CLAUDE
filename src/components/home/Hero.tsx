@@ -1,0 +1,251 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Calendar, MapPin, ArrowRight, UserPlus, LogIn, Sparkles } from 'lucide-react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Container } from '../common/Container';
+import { Button } from '../common/Button';
+import { Badge } from '../common/Badge';
+import { useCountdown } from '../../hooks/useCountdown';
+import { DecryptText } from '../common/DecryptText';
+import { Logo } from '../common/Logo';
+import { MOTION_EASE } from '../../lib/motion';
+import { EVENT_CONFIG } from '../../config/event';
+import { home } from '../../data/content';
+
+const InstitutionLogo: React.FC<{ name: string; shortName: string; logoSrc: string }> = ({
+  name,
+  shortName,
+  logoSrc,
+}) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (hasError) {
+    return (
+      <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg font-mono text-xs font-semibold text-[var(--text-primary)]">
+        <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />
+        <span>{shortName}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg font-mono text-xs font-semibold text-[var(--text-primary)]">
+      <img
+        src={logoSrc}
+        alt={name}
+        onError={() => setHasError(true)}
+        className="h-5 w-auto object-contain"
+      />
+      <span>{shortName}</span>
+    </div>
+  );
+};
+
+export const Hero: React.FC = () => {
+  const eventDate = EVENT_CONFIG.isoDate;
+  const countdown = useCountdown(eventDate);
+  const shouldReduceMotion = useReducedMotion();
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 18 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: MOTION_EASE,
+      },
+    },
+  };
+
+  const sloganLimitlessVariants = {
+    hidden: shouldReduceMotion
+      ? { opacity: 1 }
+      : { opacity: 0, y: 12, filter: 'blur(6px)' },
+    visible: shouldReduceMotion
+      ? { opacity: 1 }
+      : {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: {
+          duration: 0.65,
+          ease: MOTION_EASE,
+          delay: 0.25,
+        },
+      },
+  };
+
+  return (
+    <section id="hero" className="relative py-20 md:py-28 overflow-hidden border-b border-[var(--border-color)] bg-transparent transition-colors">
+      <Container size="lg">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col items-center text-center space-y-6 max-w-4xl mx-auto"
+        >
+          {/* 1. Top Badges (Order: 1) */}
+          <motion.div variants={itemVariants} className="flex justify-center">
+            <Logo variant="emblem" className="h-24 sm:h-32 w-auto select-none" />
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-2">
+            <Badge variant="primary" className="px-3 py-1">
+              <Sparkles className="w-3.5 h-3.5 mr-1 inline text-[var(--gold)]" /> {EVENT_CONFIG.organizerShort}, {EVENT_CONFIG.collegeShort} Presents
+            </Badge>
+            <Badge variant="secondary" className="px-3 py-1 text-[var(--text-primary)] font-semibold">
+              {EVENT_CONFIG.duration}
+            </Badge>
+          </motion.div>
+
+          {/* 2. Hero Title (Order: 2) - Only H1 in the hero with Cyberpunk Decrypt effect */}
+          <motion.h1
+            variants={itemVariants}
+            aria-label="COMPUTE 50"
+            className="font-mono font-black tracking-normal text-[var(--text-primary)] leading-none text-center select-none"
+            style={{ fontSize: 'clamp(2.5rem, 9vw, 6.5rem)', letterSpacing: '0' }}
+          >
+            <span aria-hidden="true">
+              <DecryptText
+                text="COMPUTE 50"
+                highlightText="50"
+                highlightClassName="text-[var(--gold)]"
+              />
+            </span>
+          </motion.h1>
+
+          {/* 3. Slogan (Order: 3) - Slogan <p>, not a heading */}
+          <motion.p
+            variants={itemVariants}
+            aria-label="From Legacy to Limitless"
+            className="font-medium text-[var(--text-primary)] max-w-2xl mx-auto leading-snug tracking-tight text-center [text-wrap:balance]"
+            style={{ fontSize: 'clamp(1.25rem, 3.2vw, 2.25rem)' }}
+          >
+            <span aria-hidden="true" className="inline-block">
+              <span className="inline-block whitespace-nowrap">From</span>{' '}
+              <span className="inline-block whitespace-nowrap">Legacy</span>{' '}
+              <span className="inline-block whitespace-nowrap">to</span>{' '}
+              <motion.span
+                variants={sloganLimitlessVariants}
+                className="inline-block whitespace-nowrap text-[var(--accent)] font-bold"
+              >
+                Limitless
+              </motion.span>
+            </span>
+          </motion.p>
+
+          {/* 4. Muted Tagline (Order: 4) */}
+          <motion.p
+            variants={itemVariants}
+            aria-label={home.tagline}
+            className="text-sm sm:text-base lg:text-lg text-[var(--text-secondary)] font-medium max-w-xl mx-auto leading-relaxed text-center [text-wrap:balance]"
+          >
+            <span aria-hidden="true" className="inline-block">
+              <span className="inline-block whitespace-nowrap">Celebrating</span>{' '}
+              <span className="inline-block whitespace-nowrap text-[var(--gold)] font-semibold">50</span>{' '}
+              <span className="inline-block whitespace-nowrap">Years.</span>{' '}
+              <span className="inline-block whitespace-nowrap">Creating</span>{' '}
+              <span className="inline-block whitespace-nowrap">the</span>{' '}
+              <span className="inline-block whitespace-nowrap">Next.</span>
+            </span>
+          </motion.p>
+
+          {/* 5. Date & Venue (Order: 5) */}
+          <motion.div variants={itemVariants} className="w-full max-w-xl space-y-6 pt-2">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-[var(--text-secondary)] font-medium">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-[var(--accent)] shrink-0" />
+                <span className="inline-block whitespace-nowrap">{EVENT_CONFIG.dates}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-[var(--accent)] shrink-0" />
+                <span className="inline-block whitespace-nowrap">{EVENT_CONFIG.venue}</span>
+              </div>
+            </div>
+
+            {/* 6. Countdown (Order: 6) */}
+            <div className="w-full p-4 sm:p-6 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-2xl shadow-lg">
+              <p className="text-xs uppercase font-semibold text-[var(--text-secondary)] tracking-wider mb-4 font-mono">
+                Hackathon starts in
+              </p>
+              <div className="grid grid-cols-4 gap-3 text-center">
+                <div className="bg-[var(--bg-secondary)] p-3 rounded-xl border border-[var(--border-color)]">
+                  <span className="block text-2xl sm:text-4xl font-extrabold text-[var(--accent)] font-mono">
+                    {String(countdown.days).padStart(2, '0')}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-[var(--text-secondary)] uppercase">Days</span>
+                </div>
+                <div className="bg-[var(--bg-secondary)] p-3 rounded-xl border border-[var(--border-color)]">
+                  <span className="block text-2xl sm:text-4xl font-extrabold text-[var(--accent)] font-mono">
+                    {String(countdown.hours).padStart(2, '0')}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-[var(--text-secondary)] uppercase">Hours</span>
+                </div>
+                <div className="bg-[var(--bg-secondary)] p-3 rounded-xl border border-[var(--border-color)]">
+                  <span className="block text-2xl sm:text-4xl font-extrabold text-[var(--accent)] font-mono">
+                    {String(countdown.minutes).padStart(2, '0')}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-[var(--text-secondary)] uppercase">Mins</span>
+                </div>
+                <div className="bg-[var(--bg-secondary)] p-3 rounded-xl border border-[var(--border-color)]">
+                  <span className="block text-2xl sm:text-4xl font-extrabold text-[var(--accent)] font-mono">
+                    {String(countdown.seconds).padStart(2, '0')}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-[var(--text-secondary)] uppercase">Secs</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 7. Action Buttons (Order: 7) */}
+          <motion.div variants={itemVariants} className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <Link to="/register">
+              <Button size="lg" variant="primary" leftIcon={<UserPlus className="w-5 h-5" />} rightIcon={<ArrowRight className="w-5 h-5" />}>
+                Register Now
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button size="lg" variant="outline" leftIcon={<LogIn className="w-5 h-5" />}>
+                Participant Login
+              </Button>
+            </Link>
+          </motion.div>
+
+          {/* 8. Supporting Logos Bar (Order: 8) */}
+          <motion.div
+            variants={itemVariants}
+            className="pt-8 border-t border-[var(--border-color)] w-full flex flex-wrap items-center justify-center gap-6 opacity-90"
+          >
+            <div className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-widest font-mono">
+              Organized by
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-4 text-[var(--text-primary)] font-semibold text-sm">
+              <InstitutionLogo
+                name={EVENT_CONFIG.college}
+                shortName={EVENT_CONFIG.collegeShort}
+                logoSrc="/src/assets/logos/psgtech.png"
+              />
+              <InstitutionLogo
+                name={EVENT_CONFIG.organizerFull}
+                shortName={EVENT_CONFIG.organizerShort}
+                logoSrc="/src/assets/logos/csea.png"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      </Container>
+    </section>
+  );
+};

@@ -1,0 +1,58 @@
+import { Speaker } from '../types/hackathon';
+
+export const mockSpeakers: Speaker[] = [
+  {
+    id: 'spk-1',
+    name: 'Dr. R. Sudha',
+    role: 'Professor & Head, CSE',
+    organization: 'PSG College of Technology',
+    bio: 'Academic director and keynote advisor overseeing advanced computing research and student symposiums.',
+    image: '',
+    type: 'speaker',
+  },
+  {
+    id: 'spk-2',
+    name: 'Vikram Sundaram',
+    role: 'VP of Software Engineering',
+    organization: 'Cloud Enterprise Systems',
+    bio: 'Industry veteran with 18+ years leading cloud architecture, microservices, and distributed data at scale.',
+    image: '',
+    type: 'judge',
+  },
+  {
+    id: 'spk-3',
+    name: 'Ananya Ramakrishnan',
+    role: 'Lead AI Researcher',
+    organization: 'DeepVision AI Labs',
+    bio: 'Specialist in Computer Vision and Edge Inference models. Keynote speaker and open-source AI contributor.',
+    image: '',
+    type: 'speaker',
+  },
+  {
+    id: 'spk-4',
+    name: 'Karthik Natarajan',
+    role: 'Chief Technology Officer',
+    organization: 'NextGen CyberSec',
+    bio: 'Hackathon judge specializing in zero-trust cybersecurity protocols, cryptography, and Web3 systems.',
+    image: '',
+    type: 'judge',
+  },
+  {
+    id: 'spk-5',
+    name: 'Priya Venkatesh',
+    role: 'Senior Product Architect',
+    organization: 'InnovateX Labs',
+    bio: 'Hands-on technical mentor guiding participant teams on product design, scalable APIs, and full-stack UX.',
+    image: '',
+    type: 'mentor',
+  },
+  {
+    id: 'spk-6',
+    name: 'Arun Kumar',
+    role: 'Principal Systems Architect',
+    organization: 'HyperScale Mobility',
+    bio: 'Expert in embedded hardware engineering, IoT sensor protocols, and real-time computing pipelines.',
+    image: '',
+    type: 'mentor',
+  },
+];
