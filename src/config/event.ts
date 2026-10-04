@@ -1,0 +1,36 @@
+import { home } from '../data/content';
+
+export const EVENT_CONFIG = {
+  name: 'Compute 50',
+  headline: home.headline,
+  tagline: home.tagline,
+  dates: 'October 15 - 16, 2026',
+  dateStart: 'October 15, 2026',
+  dateEnd: 'October 16, 2026',
+  isoDate: '2026-10-15T09:00:00',
+  duration: '50 Years of M.E. CSE Legacy',
+  venue: 'Round 1 Online · Finals at PSG Tech',
+  venueFull: 'Department of CSE, PSG College of Technology, Peelamedu, Coimbatore - 641004',
+  prizePool: '₹2,50,000+',
+  prizePoolNumeric: 250000,
+  prizes: {
+    first: 100000,
+    second: 60000,
+    third: 40000,
+    categories: 50000,
+    total: 250000,
+    totalFormatted: '₹2,50,000+',
+  },
+  teamSize: '2 - 4 Members',
+  contactEmail: 'csea@psgtech.ac.in',
+  contactPhone: '+91 98765 43210 / +91 91234 56789',
+  whatsappLink: 'https://chat.whatsapp.com/compute50-official',
+  organizerFull: 'CSEA – Computer Science and Engineering Association',
+  organizerShort: 'CSEA',
+  organizerWebsite: 'https://csea.psgtech.ac.in/',
+  college: 'PSG College of Technology',
+  collegeShort: 'PSG Tech',
+  footerCopyright: '© 2026 Compute 50 · CSEA, PSG College of Technology',
+} as const;
+
+export default EVENT_CONFIG;
